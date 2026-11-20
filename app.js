@@ -557,6 +557,17 @@ function init() {
   bindCalc('tax-labor', calcLabor);
   bindCalc('tax-reverse', calcReverse);
 
+  // 复制单张结果卡片的数值：事件委托，五个页签的所有卡片共用一个监听。
+  document.addEventListener('click', async e => {
+    const btn = e.target.closest('.copy-btn');
+    if (!btn) return;
+    const card = btn.closest('.result-card');
+    const valueEl = card && $('.result-value', card);
+    if (!valueEl) return;
+    const ok = await copyText(valueEl.textContent.trim());
+    toast(ok ? '已复制' : '复制失败', ok ? 'success' : 'error');
+  });
+
   $('#btn-about').addEventListener('click', openAboutModal);
   $('#modal-cancel').addEventListener('click', closeModal);
   $('#modal-ok').addEventListener('click', () => { if (modalOkHandler) modalOkHandler(); });
