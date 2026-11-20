@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#3D8BFF">
+  <title>财税工作台</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%233D8BFF'/%3E%3Cpath d='M8 10h16M8 16h16M8 22h10' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Ccircle cx='24' cy='22' r='4' fill='%23FFD666' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <header class="app-header">
+    <div class="header-brand">
+      <svg class="header-icon" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="#3D8BFF"/>
+        <path d="M8 10h16M8 16h16M8 22h10" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="24" cy="22" r="4" fill="#FFD666" stroke="#fff" stroke-width="1.5"/>
+        <path d="M24 20v4M22 22h4" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span class="header-title">财税工作台</span>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" id="btn-about" type="button">关于</button>
+    </div>
+  </header>
+
+  <nav class="app-tabs" id="main-tabs">
+    <button class="app-tab is-active" type="button" data-target="pane-bank">联行号查询</button>
+    <button class="app-tab" type="button" data-target="pane-tax">税费计算器</button>
+  </nav>
+
+  <main class="app-main">
+
+    <!-- ==================== 联行号查询 ==================== -->
+    <section class="pane is-active" id="pane-bank">
+      <div class="pane-split">
+
+        <aside class="subtabs" id="bank-subtabs">
+          <button class="subtab is-active" type="button" data-target="bank-single">单个查询</button>
+          <button class="subtab" type="button" data-target="bank-batch">批量查询</button>
+        </aside>
+
+        <div class="pane-content">
+
+          <!-- 单个查询 -->
+          <div class="subpane is-active" id="bank-single">
+            <div class="search-bar">
+              <div class="input-wrap">
+                <svg class="input-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <input type="text" id="bank-keyword" autocomplete="off"
+                       placeholder="输入联行号精确查询，或银行名称关键词模糊搜索（多条件空格分隔）">
+              </div>
+            </div>
+
+            <div class="status-line" id="bank-status">输入关键词开始搜索</div>
+
+            <div class="table-wrap">
+              <table class="data-table" id="bank-table">
+                <thead>
+                  <tr><th class="col-cnap">联行号</th><th>银行名称</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div class="empty-hint" id="bank-empty">输入关键词开始搜索</div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn" type="button" id="bank-copy-cnap" disabled>复制联行号</button>
+              <button class="btn" type="button" id="bank-copy-name" disabled>复制银行名</button>
+            </div>
+          </div>
+
+          <!-- 批量查询 -->
+          <div class="subpane" id="bank-batch">
+            <textarea id="batch-input" rows="6"
+                      placeholder="每行输入一个开户行名称，例如：&#10;中国工商银行股份有限公司北京长安支行&#10;中国建设银行股份有限公司上海浦东分行"></textarea>
+
+            <div class="status-line" id="batch-status">每行输入一个开户行名称，点击批量查询</div>
+
+            <div class="table-wrap">
+              <table class="data-table" id="batch-table">
+                <thead>
+                  <tr><th>输入的开户行</th><th class="col-cnap">联行号</th><th>匹配银行名</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+              <div class="empty-hint" id="batch-empty">尚未查询</div>
+            </div>
+
+            <div class="action-bar">
+              <button class="btn" type="button" id="batch-copy-cnap" disabled>复制联行号列</button>
+              <button class="btn" type="button" id="batch-copy-name" disabled>复制银行名称列</button>
+              <button class="btn btn-primary" type="button" id="batch-run">批量查询</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 税费计算器 ==================== -->
+    <section class="pane" id="pane-tax">
+      <div class="pane-split">
+
+        <aside class="subtabs" id="tax-subtabs">
+          <button class="subtab is-active" type="button" data-target="tax-income">工资薪金个税</button>
+          <button class="subtab" type="button" data-target="tax-laborrem">劳务报酬个税</button>
+          <button class="subtab" type="button" data-target="tax-invoice">发票税费计算</button>
+          <button class="subtab" type="button" data-target="tax-labor">劳务分包管理费</button>
+          <button class="subtab" type="button" data-target="tax-reverse">开票倒算</button>
+        </aside>
+
+        <div class="pane-content">
+
+          <!-- 工资薪金个税 -->
+          <div class="subpane is-active" id="tax-income">
+            <div class="form-block">
+              <div class="form-row">
+                <label class="form-label" for="inc-months">累计月份数（含本月）</label>
+                <input class="form-input" type="text" id="inc-months" inputmode="numeric" placeholder="如 5">
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="inc-income">累计收入（元，含本月）</label>
+                <input class="form-input" type="text" id="inc-income" inputmode="decimal" placeholder="如 75000">
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="inc-social">累计五险一金（元）</label>
+                <input class="form-input" type="text" id="inc-social" inputmode="decimal" placeholder="如 15000">
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="inc-special">累计专项附加扣除（元）</label>
+                <input class="form-input" type="text" id="inc-special" inputmode="decimal" placeholder="如 10000">
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="inc-paid">之前已预扣税额（元）</label>
+                <input class="form-input" type="text" id="inc-paid" inputmode="decimal" placeholder="如 450">
+              </div>
+            </div>
+
+            <div class="result-grid grid-4">
+              <div class="result-card">
+                <div class="result-label">累计应纳税所得额</div>
+                <div class="result-value" id="inc-out-taxable">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">适用税率</div>
+                <div class="result-value" id="inc-out-rate">—</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">速算扣除数</div>
+                <div class="result-value" id="inc-out-quick">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">累计应预扣税额</div>
+                <div class="result-value" id="inc-out-cumtax">0.00 元</div>
+              </div>
+              <div class="result-card is-primary">
+                <div class="result-label">本期（本月）应预扣税额</div>
+                <div class="result-value" id="inc-out-thistax">0.00 元</div>
+              </div>
+            </div>
+
+            <div class="hint">
+              说明：累计预扣预缴法，应纳税所得额 = 累计收入 - 累计五险一金 - 累计专项附加扣除 - 5000×月份数；
+              本期应预扣 = 累计应预扣 - 已预扣（不足 0 按 0 计，多扣留待后续月份抵减）。
+            </div>
+          </div>
+
+          <!-- 劳务报酬个税 -->
+          <div class="subpane" id="tax-laborrem">
+            <div class="form-block">
+              <div class="form-row">
+                <span class="form-label">纳税人身份</span>
+                <div class="radio-group" id="lr-ident">
+                  <label class="radio"><input type="radio" name="lr-ident" value="居民个人" checked><span>居民个人</span></label>
+                  <label class="radio"><input type="radio" name="lr-ident" value="非居民个人"><span>非居民个人</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="lr-income">单次劳务报酬（元）</label>
+                <input class="form-input" type="text" id="lr-income" inputmode="decimal" placeholder="如 10000">
+              </div>
+            </div>
+
+            <div class="result-grid grid-4">
+              <div class="result-card">
+                <div class="result-label">减除费用</div>
+                <div class="result-value" id="lr-out-deduct">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">应纳税所得额</div>
+                <div class="result-value" id="lr-out-taxable">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">适用税率</div>
+                <div class="result-value" id="lr-out-rate">—</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">速算扣除数</div>
+                <div class="result-value" id="lr-out-quick">0.00 元</div>
+              </div>
+              <div class="result-card is-primary">
+                <div class="result-label">应预扣税额</div>
+                <div class="result-value" id="lr-out-tax">0.00 元</div>
+              </div>
+            </div>
+
+            <div class="hint">
+              说明：居民个人每次收入 ≤4000 减除 800，&gt;4000 减除 20%，按 20%/30%/40% 三档预扣；
+              非居民个人统一减除 20% 费用，适用 3%–45% 月度换算表。
+            </div>
+          </div>
+
+          <!-- 发票税费计算 -->
+          <div class="subpane" id="tax-invoice">
+            <div class="form-block">
+              <div class="form-row">
+                <span class="form-label">金额口径</span>
+                <div class="radio-group" id="inv-mode">
+                  <label class="radio"><input type="radio" name="inv-mode" value="不含税金额" checked><span>不含税金额</span></label>
+                  <label class="radio"><input type="radio" name="inv-mode" value="含税金额"><span>含税金额</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="inv-amount">金额（元）</label>
+                <input class="form-input" type="text" id="inv-amount" inputmode="decimal" placeholder="输入金额（元）">
+              </div>
+              <div class="form-row">
+                <span class="form-label">增值税率</span>
+                <div class="radio-group" id="inv-rate">
+                  <label class="radio"><input type="radio" name="inv-rate" value="3%" checked><span>3%</span></label>
+                  <label class="radio"><input type="radio" name="inv-rate" value="5%"><span>5%</span></label>
+                  <label class="radio"><input type="radio" name="inv-rate" value="6%"><span>6%</span></label>
+                  <label class="radio"><input type="radio" name="inv-rate" value="9%"><span>9%</span></label>
+                  <label class="radio"><input type="radio" name="inv-rate" value="13%"><span>13%</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">地区</span>
+                <div class="radio-group" id="inv-region">
+                  <label class="radio"><input type="radio" name="inv-region" value="城区（城建税 7%）" checked><span>城区（城建税 7%）</span></label>
+                  <label class="radio"><input type="radio" name="inv-region" value="乡镇（城建税 5%）"><span>乡镇（城建税 5%）</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-grid grid-3">
+              <div class="result-card">
+                <div class="result-label">增值税</div>
+                <div class="result-value" id="inv-out-vat">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">城建税</div>
+                <div class="result-value" id="inv-out-city">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">教育费附加（3%）</div>
+                <div class="result-value" id="inv-out-edu">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">地方教育附加（2%）</div>
+                <div class="result-value" id="inv-out-local">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">附加税费合计</div>
+                <div class="result-value" id="inv-out-surch">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">印花税（0.03%）</div>
+                <div class="result-value" id="inv-out-stamp">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">价税合计</div>
+                <div class="result-value" id="inv-out-total">0.00 元</div>
+              </div>
+              <div class="result-card is-primary">
+                <div class="result-label">应缴税费合计</div>
+                <div class="result-value" id="inv-out-payable">0.00 元</div>
+              </div>
+            </div>
+
+            <div class="hint">
+              说明：附加税费以增值税额为基数；教育费附加 3%、地方教育附加 2%。未计入月销售额免征附加税费等优惠政策判断。
+            </div>
+          </div>
+
+          <!-- 劳务分包管理费 -->
+          <div class="subpane" id="tax-labor">
+            <div class="form-block">
+              <div class="form-row">
+                <span class="form-label">金额口径</span>
+                <div class="radio-group" id="lab-mode">
+                  <label class="radio"><input type="radio" name="lab-mode" value="不含税金额" checked><span>不含税金额</span></label>
+                  <label class="radio"><input type="radio" name="lab-mode" value="含税金额"><span>含税金额</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label class="form-label" for="lab-amount">金额（元）</label>
+                <input class="form-input" type="text" id="lab-amount" inputmode="decimal" placeholder="输入开票金额（元）">
+              </div>
+              <div class="form-row">
+                <span class="form-label">增值税率</span>
+                <div class="radio-group" id="lab-rate">
+                  <label class="radio"><input type="radio" name="lab-rate" value="3%" checked><span>3%</span></label>
+                  <label class="radio"><input type="radio" name="lab-rate" value="5%"><span>5%</span></label>
+                  <label class="radio"><input type="radio" name="lab-rate" value="6%"><span>6%</span></label>
+                  <label class="radio"><input type="radio" name="lab-rate" value="9%"><span>9%</span></label>
+                  <label class="radio"><input type="radio" name="lab-rate" value="13%"><span>13%</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">地区</span>
+                <div class="radio-group" id="lab-region">
+                  <label class="radio"><input type="radio" name="lab-region" value="城区（城建税 7%）" checked><span>城区（城建税 7%）</span></label>
+                  <label class="radio"><input type="radio" name="lab-region" value="乡镇（城建税 5%）"><span>乡镇（城建税 5%）</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">管理费算法</span>
+                <div class="radio-group" id="lab-alg">
+                  <label class="radio"><input type="radio" name="lab-alg" value="A（含税）"><span>A（含税）</span></label>
+                  <label class="radio"><input type="radio" name="lab-alg" value="B（不含税）" checked><span>B（不含税）</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">管理费率</span>
+                <div class="radio-group" id="lab-fee"></div>
+              </div>
+            </div>
+
+            <div class="result-grid grid-3">
+              <div class="result-card">
+                <div class="result-label">税费合计</div>
+                <div class="result-value" id="lab-out-tax">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">管理费</div>
+                <div class="result-value" id="lab-out-fee">0.00 元</div>
+              </div>
+              <div class="result-card is-primary">
+                <div class="result-label">应缴费用合计</div>
+                <div class="result-value" id="lab-out-total">0.00 元</div>
+              </div>
+            </div>
+
+            <div class="hint">
+              说明：劳务分包按开票金额收取管理费，税费合计算自所选增值税率与地区。<br>
+              算法 A（含税）：应缴费用合计＝开票金额×费率取整，管理费＝应缴费用合计−税费合计。<br>
+              算法 B（不含税）：管理费＝开票金额×费率取整，应缴费用合计＝税费合计＋管理费。
+            </div>
+          </div>
+
+          <!-- 开票倒算 -->
+          <div class="subpane" id="tax-reverse">
+            <div class="form-block">
+              <div class="form-row">
+                <label class="form-label" for="rev-target">预结算金额（元）</label>
+                <input class="form-input" type="text" id="rev-target" inputmode="decimal" placeholder="输入预结算金额（元）">
+              </div>
+              <div class="form-row">
+                <span class="form-label">算法</span>
+                <div class="radio-group" id="rev-alg">
+                  <label class="radio"><input type="radio" name="rev-alg" value="A（含税）"><span>A（含税）</span></label>
+                  <label class="radio"><input type="radio" name="rev-alg" value="B（不含税）" checked><span>B（不含税）</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">管理费率</span>
+                <div class="radio-group" id="rev-fee"></div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">增值税率</span>
+                <div class="radio-group" id="rev-rate">
+                  <label class="radio"><input type="radio" name="rev-rate" value="3%" checked><span>3%</span></label>
+                  <label class="radio"><input type="radio" name="rev-rate" value="5%"><span>5%</span></label>
+                  <label class="radio"><input type="radio" name="rev-rate" value="6%"><span>6%</span></label>
+                  <label class="radio"><input type="radio" name="rev-rate" value="9%"><span>9%</span></label>
+                  <label class="radio"><input type="radio" name="rev-rate" value="13%"><span>13%</span></label>
+                </div>
+              </div>
+              <div class="form-row">
+                <span class="form-label">地区</span>
+                <div class="radio-group" id="rev-region">
+                  <label class="radio"><input type="radio" name="rev-region" value="城区（城建税 7%）" checked><span>城区（城建税 7%）</span></label>
+                  <label class="radio"><input type="radio" name="rev-region" value="乡镇（城建税 5%）"><span>乡镇（城建税 5%）</span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-grid grid-3">
+              <div class="result-card is-primary">
+                <div class="result-label">需开票金额</div>
+                <div class="result-value" id="rev-out-invoice">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">增值税</div>
+                <div class="result-value" id="rev-out-vat">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">城建税</div>
+                <div class="result-value" id="rev-out-city">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">教育费附加（3%）</div>
+                <div class="result-value" id="rev-out-edu">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">地方教育附加（2%）</div>
+                <div class="result-value" id="rev-out-local">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">印花税（0.03%）</div>
+                <div class="result-value" id="rev-out-stamp">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">管理费（取整）</div>
+                <div class="result-value" id="rev-out-fee">0.00 元</div>
+              </div>
+              <div class="result-card">
+                <div class="result-label">税费合计</div>
+                <div class="result-value" id="rev-out-tax">0.00 元</div>
+              </div>
+              <div class="result-card is-primary">
+                <div class="result-label">扣款合计</div>
+                <div class="result-value" id="rev-out-deduct">0.00 元</div>
+              </div>
+            </div>
+
+            <div class="error-line">
+              <span class="error-label">误差</span>
+              <span class="error-value" id="rev-out-error">0.00 元</span>
+            </div>
+
+            <div class="hint">
+              说明：输入预结算金额（目标到手），倒算需开多少发票。<br>
+              算法 A（含税）：开票金额＝目标÷（1−费率），解析解。<br>
+              算法 B（不含税）：开票金额＝目标＋各项税费＋管理费，迭代求解。
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- 令牌 / 关于 弹窗 -->
+<div class="modal-mask" id="modal-mask" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-title" id="modal-title">关于</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-foot">
+      <button class="btn" type="button" id="modal-cancel">关闭</button>
+      <button class="btn btn-primary" type="button" id="modal-ok" hidden>保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="tax.js"></script>
+<script src="bank.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
